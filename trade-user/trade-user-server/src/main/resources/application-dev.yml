@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: trade-user-server
+  redis:
+    host: localhost
+    port: 6379
+    # 连接超时时间（毫秒）
+    timeout: 3000
+    # Redis默认情况下有16个分片，这里配置具体使用的分片，默认是0
+    database: 0
+    lettuce:
+      pool:
+        # 连接池最大连接数（使用负值表示没有限制） 默认 8
+        max-active: 4
+        # 连接池最大阻塞等待时间（使用负值表示没有限制） 默认 -1
+        max-wait: -1
+        # 连接池中的最大空闲连接 默认 8
+        max-idle: 2
+        # 连接池中的最小空闲连接 默认 0
+        min-idle: 1
+  datasource:
+    url: jdbc:mysql://localhost/trade?serverTimezone=Asia/Shanghai&useAffectedRows=true
+    username: trade
+    password: t6nESmTmSMaWYFWw
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:10001/eureka,http://localhost:10002/eureka
+  instance:
+    prefer-ip-address: true
+server:
+  port: 20001
+
+mybatis:
+  mapper-locations: classpath:com/moesome/trade/user/server/model/mapper/*.xml

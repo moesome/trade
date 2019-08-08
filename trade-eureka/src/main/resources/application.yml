@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: trade-eureka
+
+server:
+  port: 10001
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:10001/eureka,http://localhost:10002/eureka
+  instance:
+    prefer-ip-address: true
+  server:
+    enable-self-preservation: false

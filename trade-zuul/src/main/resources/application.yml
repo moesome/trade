@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: trade-zuul
+  redis:
+    host: localhost
+    port: 6379
+    # 连接超时时间（毫秒）
+    timeout: 3000
+    # Redis默认情况下有16个分片，这里配置具体使用的分片，默认是0
+    database: 0
+    lettuce:
+      pool:
+        # 连接池最大连接数（使用负值表示没有限制） 默认 8
+        max-active: 4
+        # 连接池最大阻塞等待时间（使用负值表示没有限制） 默认 -1
+        max-wait: -1
+        # 连接池中的最大空闲连接 默认 8
+        max-idle: 2
+        # 连接池中的最小空闲连接 默认 0
+        min-idle: 1
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:10001/eureka,http://localhost:10002/eureka
+  instance:
+    prefer-ip-address: true
+server:
+  port: 11001
+
+# 显示 actuator 监控信息
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+zuul:
+  sensitiveHeaders:
+  ignored-services: "*"
+  routes:
+    trade-user-server:
+      path: /users/**
+      service-id: trade-user-server
+      strip-prefix: false
+    trade-commodity-server:
+      path: /commodities/**
+      service-id: trade-commodity-server
+      strip-prefix: false
