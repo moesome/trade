@@ -8,7 +8,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @SpringBootApplication
 @EnableDiscoveryClient
 @MapperScan("com.moesome.trade.commodity.server.model.dao")
-public class TradeCommodityServerApplication {
+public class TradeCommodityServerApplication{
     public static void main(String[] args) {
         SpringApplication.run(TradeCommodityServerApplication.class, args);
     }

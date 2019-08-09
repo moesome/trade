@@ -8,21 +8,21 @@ public interface CacheManager {
      * @param userDetailVo
      * @return
      */
-    String saveUserDetailVoAndGenerateSessionId(UserDetailVo userDetailVo);
+    String saveUserDetailVo(UserDetailVo userDetailVo);
 
     /**
      * 将用户使用指定 sessionId存入 redis
      * @param userDetailVo
      * @return
      */
-    String saveUserDetailVo(UserDetailVo userDetailVo,String sessionId);
+    void saveUserDetailVo(UserDetailVo userDetailVo,String sessionId);
 
     /**
      * 根据 sessionId 读出 UserDetailVo
      * @param sessionId
      * @return 返回未经反序列化的 UserDetailVo
      */
-    UserDetailVo getUserDetailVoBySessionId(String sessionId);
+    UserDetailVo getUserDetailVo(String sessionId);
 
     /**
      * 刷新 redis session 的缓存存在时间

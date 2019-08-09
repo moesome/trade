@@ -2,6 +2,7 @@ package com.moesome.trade.commodity.common.response.result;
 
 import com.moesome.trade.commodity.common.response.vo.CommodityDetailVo;
 import com.moesome.trade.common.code.Code;
+import com.moesome.trade.common.code.ErrorCode;
 import com.moesome.trade.common.response.Result;
 import lombok.Data;
 
@@ -13,6 +14,10 @@ public class CommodityResult extends Result<List<CommodityDetailVo>> {
     Integer count;
 
     Date now;
+
+    public static final CommodityResult CANT_MODIFY_AFTER_START = new CommodityResult(ErrorCode.CANT_MODIFY_AFTER_START);
+
+    public static final CommodityResult START_TIME_NOT_ALLOWED = new CommodityResult(ErrorCode.START_TIME_NOT_ALLOWED);
 
     public CommodityResult(Code code) {
         super(code);

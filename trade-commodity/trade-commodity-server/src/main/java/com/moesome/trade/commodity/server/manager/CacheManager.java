@@ -6,4 +6,5 @@ public interface CacheManager {
     void saveCommodityDetailVo(CommodityDetailVo commodityDetailVo);
     void saveCommodityDetailVo(CommodityDetailVo commodityDetailVo,Long expireSecond);
     CommodityDetailVo getCommodityDetailVo(Long spikeId);
+    void removeCommodityDetailVo(Long commodityId);
 }

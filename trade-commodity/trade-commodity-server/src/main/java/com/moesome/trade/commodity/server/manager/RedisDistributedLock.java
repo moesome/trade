@@ -6,7 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -17,7 +17,7 @@ public class RedisDistributedLock implements DistributedLock {
 
     private String type;
 
-    private final String UUID = java.util.UUID.randomUUID().toString();
+    private final String ID = UUID.randomUUID().toString();
 
     public RedisDistributedLock(String type) {
         this.type = type;
@@ -43,12 +43,22 @@ public class RedisDistributedLock implements DistributedLock {
         return redisTemplateForDistributedLock.opsForValue().setIfAbsent(getKey(id), getValue(),10, TimeUnit.SECONDS);
     }
 
+    /**
+     * 生成键，如 commodity:1 即对一号商品上锁
+     * @param id
+     * @return
+     */
     private String getKey(Long id){
         return type+":"+id;
     }
 
+    /**
+     * 生成值，如 fbc122f3-681b-4859-8678-2ba9ff28253c:30
+     * 即 UUID 对应机器的 30 号线程对其上锁
+     * @return
+     */
     private String getValue(){
-        return UUID+":"+Thread.currentThread().getId();
+        return ID+":"+Thread.currentThread().getId();
     }
 
     @Override
@@ -59,7 +69,7 @@ public class RedisDistributedLock implements DistributedLock {
         defaultRedisScript.setScriptText("if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end");
         defaultRedisScript.setResultType(Long.class);
         Long result = redisTemplateForDistributedLock.execute(defaultRedisScript, Collections.singletonList(getKey(id)), getValue());
-        if (result == 1){
+        if (result != null && result == 1){
             log.info(Thread.currentThread().getId()+"解锁成功："+type+":"+id+" result="+result);
             return true;
         }else{

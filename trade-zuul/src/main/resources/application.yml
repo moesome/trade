@@ -49,3 +49,11 @@ zuul:
       path: /commodities/**
       service-id: trade-commodity-server
       strip-prefix: false
+  retryable: true
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMillsecond: 6000

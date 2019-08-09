@@ -3,7 +3,6 @@ package com.moesome.trade.user.common.response.result;
 
 import com.moesome.trade.common.code.Code;
 import com.moesome.trade.common.code.ErrorCode;
-import com.moesome.trade.common.code.SuccessCode;
 import com.moesome.trade.common.response.Result;
 import com.moesome.trade.user.common.response.vo.UserDetailVo;
 

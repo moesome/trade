@@ -14,6 +14,9 @@ public class Result<T> {
 	private T object;
 
 	public static final Result SUCCESS = new Result(SuccessCode.OK);
+	public static final Result CLIENT_ERROR = new Result(ErrorCode.CLIENT_ERROR);
+	public static final Result SERVER_ERROR = new Result(ErrorCode.SERVER_ERROR);
+
 	public static final Result AUTHORIZED_ERR = new Result(ErrorCode.AUTHORIZED_ERR);
 	public static final Result REQUEST_ERR = new Result(ErrorCode.REQUEST_ERR);
 

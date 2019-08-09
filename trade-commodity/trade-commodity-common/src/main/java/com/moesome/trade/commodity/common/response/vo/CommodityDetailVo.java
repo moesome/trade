@@ -5,6 +5,12 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * 由 storeVo 转化为 detailVo 需要填充以下数据:<br />
+ * 1. id<br />
+ * 2. createdAt<br />
+ * 3. updatedAt<br />
+ */
 @Data
 public class CommodityDetailVo {
 

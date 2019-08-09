@@ -15,20 +15,19 @@ public class RedisCacheManager implements CacheManager{
     private RedisTemplate<String, UserDetailVo> redisTemplateForUser;
 
     @Override
-    public String saveUserDetailVoAndGenerateSessionId(UserDetailVo userDetailVo){
+    public String saveUserDetailVo(UserDetailVo userDetailVo){
         String sessionId = UUID.randomUUID().toString().replace("-","");
-        redisTemplateForUser.opsForValue().set(sessionId, userDetailVo, RedisConfig.EXPIRE_SECOND, TimeUnit.SECONDS);
+        saveUserDetailVo(userDetailVo,sessionId);
         return sessionId;
     }
 
     @Override
-    public String saveUserDetailVo(UserDetailVo userDetailVo,String sessionId){
+    public void saveUserDetailVo(UserDetailVo userDetailVo,String sessionId){
         redisTemplateForUser.opsForValue().set(sessionId, userDetailVo, RedisConfig.EXPIRE_SECOND,TimeUnit.SECONDS);
-        return sessionId;
     }
 
     @Override
-    public UserDetailVo getUserDetailVoBySessionId(String sessionId){
+    public UserDetailVo getUserDetailVo(String sessionId){
         return redisTemplateForUser.opsForValue().get(sessionId);
     }
 

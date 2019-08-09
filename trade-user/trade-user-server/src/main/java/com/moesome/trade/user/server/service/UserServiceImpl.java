@@ -11,6 +11,7 @@ import com.moesome.trade.user.server.config.RedisConfig;
 import com.moesome.trade.user.server.manager.CacheManager;
 import com.moesome.trade.user.server.model.dao.UserMapper;
 import com.moesome.trade.user.server.model.domain.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService{
     @Autowired
     private UserMapper userMapper;
@@ -41,14 +43,17 @@ public class UserServiceImpl implements UserService{
         }
         UserDetailVo userDetailVo = transformUserToUserDetailVo(user);
         // 存入 redis
-        String sessionId = cacheManager.saveUserDetailVoAndGenerateSessionId(userDetailVo);
+        log.info("用户使用密码登录 userDetailVo: "+userDetailVo);
+        String sessionId = cacheManager.saveUserDetailVo(userDetailVo);
         // 使客户端设置 cookie
+        log.info("生成用户 sessionId: "+sessionId);
         CookiesManager.setCookie(sessionId, RedisConfig.EXPIRE_SECOND,httpServletResponse);
         return new UserResult(SuccessCode.OK,userDetailVo);
     }
 
     @Override
     public Result logout(String sessionId, HttpServletResponse httpServletResponse) {
+        log.info("用户登出，清空 session, sessionId: "+sessionId);
         CookiesManager.setCookie("",0,httpServletResponse);
         cacheManager.refreshUserDetailVo(sessionId,0);
         return Result.SUCCESS;
@@ -56,10 +61,12 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Result check(String sessionId, HttpServletResponse httpServletResponse) {
-        UserDetailVo userDetailVo = cacheManager.getUserDetailVoBySessionId(sessionId);
+        UserDetailVo userDetailVo = cacheManager.getUserDetailVo(sessionId);
         if (userDetailVo == null){
+            log.info("用户使用失效 session 登录 sessionId: "+sessionId);
             return Result.AUTHORIZED_ERR;
         }
+        log.info("用户使用有效 session 登录 sessionId: "+sessionId);
         cacheManager.refreshUserDetailVo(sessionId,RedisConfig.EXPIRE_SECOND);
         CookiesManager.setCookie(sessionId,RedisConfig.EXPIRE_SECOND,httpServletResponse);
         return new UserResult(SuccessCode.OK,userDetailVo);
@@ -75,12 +82,17 @@ public class UserServiceImpl implements UserService{
         user.setCreatedAt(date);
         user.setUpdatedAt(date);
         user.setCoin(BigDecimal.ZERO);
+        log.info("新增用户 user:"+user);
         userMapper.insert(user);
         return new UserResult(SuccessCode.OK);
     }
 
     // 密码在这一步之后已经加密
-
+    /**
+     * UserStoreVo to User
+     * @param userStoreVo
+     * @return
+     */
     private User transformUserStoreVoToUser(UserStoreVo userStoreVo){
         if (userStoreVo == null){
             return null;
@@ -98,6 +110,11 @@ public class UserServiceImpl implements UserService{
         return user;
     }
 
+    /**
+     * User to UserDetailVo
+     * @param user
+     * @return
+     */
     private UserDetailVo transformUserToUserDetailVo(User user){
         if (user == null){
             return null;
@@ -114,7 +131,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Result show(String sessionId,Long id) {
-        UserDetailVo userDetailVo = cacheManager.getUserDetailVoBySessionId(sessionId);
+        UserDetailVo userDetailVo = cacheManager.getUserDetailVo(sessionId);
         if (userDetailVo == null || !userDetailVo.getId().equals(id)){
             return Result.AUTHORIZED_ERR;
         }
@@ -128,21 +145,24 @@ public class UserServiceImpl implements UserService{
         if (userInDB != null && !userId.equals(userInDB.getId())){
             return UserResult.USER_DUPLICATE;
         }
-
         User user = transformUserStoreVoToUser(userStoreVo);
         user.setUpdatedAt(new Date());
         user.setId(userId);
+        log.info("以非空字段更新用户数据库 user: "+user);
         userMapper.updateByPrimaryKeySelective(user);
-        UserDetailVo userDetailVo = transformUserToUserDetailVo(user);
-        // 删除旧缓存
+        // store 转化为 detailVo 返回时需要填充 coin 信息，需要额外查询一次数据库
+        userInDB = userMapper.selectByPrimaryKey(userId);
+        UserDetailVo userDetailVo = transformUserToUserDetailVo(userInDB);
+        log.info("更新 sessionId: "+sessionId+" 缓存 userDetailVo:"+userDetailVo);
         cacheManager.saveUserDetailVo(userDetailVo,sessionId);
         return new UserResult(SuccessCode.OK,userDetailVo);
     }
 
     @Override
-    public Result delete(String sessionId, Long id) {
+    public Result delete(String sessionId, Long userId) {
         // 校验 sessionId 是否为管理员（该功能为了测试方便暂时没有加）
-        userMapper.deleteByPrimaryKey(id);
+        log.info("管理员删除用户: userId: "+userId);
+        userMapper.deleteByPrimaryKey(userId);
         cacheManager.refreshUserDetailVo(sessionId,0);
         return Result.SUCCESS;
     }

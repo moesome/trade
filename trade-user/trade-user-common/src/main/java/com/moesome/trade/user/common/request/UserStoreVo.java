@@ -8,6 +8,14 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
+/**
+ * 用来接收存储/修改商品信息
+ * 转化为 User 实体时以下值需要服务端填充：<br/>
+ * 1. id<br/>
+ * 2. createdAt<br/>
+ * 3. updatedAt<br/>
+ * 4. coin<br/>
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

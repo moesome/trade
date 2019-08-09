@@ -1,5 +1,6 @@
 package com.moesome.trade.commodity.server.model.dao;
 
+import com.moesome.trade.commodity.common.response.vo.CommodityDetailVo;
 import com.moesome.trade.commodity.server.model.domain.Commodity;
 
 import java.util.List;
@@ -20,4 +21,10 @@ public interface CommodityMapper {
     List<Commodity> selectByPagination(String order, int start, int count);
 
     Integer count();
+
+    List<Commodity> selectByUserIdPagination(Long userId, String order, int start, int count);
+
+    Integer countByUserId();
+
+    List<Commodity> selectAll();
 }

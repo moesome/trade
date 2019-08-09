@@ -8,6 +8,8 @@ import lombok.Getter;
 public enum ErrorCode implements Code{
 	// 请求相关错误
 	REQUEST_ERR(-1000,"请求错误"),
+	CANT_MODIFY_AFTER_START(-1001,"秒杀开始后无法修改商品"),
+	START_TIME_NOT_ALLOWED(-1002,"开始时间必须在结束时间之前"),
 
 	// 认证相关错误
 	AUTHORIZED_ERR(-2000,"认证异常，请重新登录。"),
@@ -15,7 +17,11 @@ public enum ErrorCode implements Code{
 	// 用户相关错误
 	USER_DUPLICATE(-3000,"用户名重复"),
 
+	// 客户端异常
+	CLIENT_ERROR(-4000,"客户端异常"),
 
+	// 服务器异常
+	SERVER_ERROR(-5000,"服务器异常"),
 
 	UNAUTHORIZED(-401,"未认证"),
 	UNKNOWN_ERR(-402,"未知错误"),
@@ -26,7 +32,6 @@ public enum ErrorCode implements Code{
 	TIME_LIMIT_NOT_ARRIVED(-511,"未到达开始时间"),
 	IN_QUEUE(-512,"请求在队列中"),
 	FAILED(-513,"请求失败"),
-	TIME_NOT_ALLOW(-514,"未在指定时间内"),
 	;
 
 	private int code;
