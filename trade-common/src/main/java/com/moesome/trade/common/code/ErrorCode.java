@@ -10,6 +10,11 @@ public enum ErrorCode implements Code{
 	REQUEST_ERR(-1000,"请求错误"),
 	CANT_MODIFY_AFTER_START(-1001,"秒杀开始后无法修改商品"),
 	START_TIME_NOT_ALLOWED(-1002,"开始时间必须在结束时间之前"),
+	REPEATED_REQUEST(-1003,"重复的请求"),
+	TIME_LIMIT_EXCEED(-1004,"超过结束时间"),
+	TIME_LIMIT_NOT_ARRIVED(-1005,"未到达开始时间"),
+	LIMIT_EXCEED(-1006,"超出数量限制"),
+
 
 	// 认证相关错误
 	AUTHORIZED_ERR(-2000,"认证异常，请重新登录。"),
@@ -26,10 +31,8 @@ public enum ErrorCode implements Code{
 	UNAUTHORIZED(-401,"未认证"),
 	UNKNOWN_ERR(-402,"未知错误"),
 	USERNAME_OR_PASSWORD_ERR(-629,"用户名或密码错误"),
-	REPEATED_REQUEST(-508,"重复的请求"),
-	LIMIT_EXCEED(-509,"超出数量限制"),
-	TIME_LIMIT_EXCEED(-510,"超过结束时间"),
-	TIME_LIMIT_NOT_ARRIVED(-511,"未到达开始时间"),
+
+
 	IN_QUEUE(-512,"请求在队列中"),
 	FAILED(-513,"请求失败"),
 	;

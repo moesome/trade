@@ -19,6 +19,8 @@ public class CommodityResult extends Result<List<CommodityDetailVo>> {
 
     public static final CommodityResult START_TIME_NOT_ALLOWED = new CommodityResult(ErrorCode.START_TIME_NOT_ALLOWED);
 
+    public static final CommodityResult LIMIT_EXCEED = new CommodityResult(ErrorCode.LIMIT_EXCEED);
+
     public CommodityResult(Code code) {
         super(code);
     }

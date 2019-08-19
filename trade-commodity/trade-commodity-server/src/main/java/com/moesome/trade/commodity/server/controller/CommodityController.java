@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 外部调用
+ */
 @RestController
 @RequestMapping("commodities")
-@Slf4j
 public class CommodityController{
 
     @Autowired

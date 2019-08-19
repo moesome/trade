@@ -1,6 +1,12 @@
 package com.moesome.trade.commodity.server.manager;
 
 import com.moesome.trade.commodity.common.response.vo.CommodityDetailVo;
+import com.moesome.trade.commodity.server.model.dao.CommodityMapper;
+import com.moesome.trade.commodity.server.model.domain.Commodity;
+import com.moesome.trade.commodity.server.util.Transform;
+import com.moesome.trade.common.exception.DistributedLockException;
+import com.moesome.trade.common.manager.DistributedLock;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -13,18 +19,23 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class RedisCacheManager implements CacheManager{
-
     // 应对缓存穿透
-    private static final CommodityDetailVo TEMP_COMMODITY = new CommodityDetailVo();
-
-
+    private static final CommodityDetailVo TEMP_COMMODITY;
+    private static final Integer TEMP_COMMODITY_STOCK = Integer.MIN_VALUE;
+    static{
+        TEMP_COMMODITY = new CommodityDetailVo();
+        TEMP_COMMODITY.setStock(TEMP_COMMODITY_STOCK);
+    }
     @Autowired
     private RedisTemplate<String,Object> redisTemplateForCommodityDetailVo;
-    /**
-     * 保存商品部分信息（stock,price,startAt,endAt）到 redis，用于下单前检测
-     * @param commodityDetailVo
-     */
+
+    @Autowired
+    private CommodityMapper commodityMapper;
+
+    @Autowired
+    private DistributedLock distributedLock;
 
     @Override
     public void saveCommodityDetailVo(CommodityDetailVo commodityDetailVo){
@@ -50,15 +61,63 @@ public class RedisCacheManager implements CacheManager{
         }
     }
 
-    /**
-     * 取出商品部分信息（price,startAt,endAt）
-     * 返回 null 表示缓存中没有查到
-     * 返回空 CommodityDetailVo 对象表示缓存中查到了防止缓存穿透的临时值
-     * @param commodityId
-     * @return
-     */
     @Override
     public CommodityDetailVo getCommodityDetailVo(Long commodityId){
+        log.debug("从缓存中取 commodityId: "+commodityId);
+        CommodityDetailVo commodityDetailVo = doGet(commodityId);
+        // 发现缓存失效
+        if (commodityDetailVo == null){
+            log.debug("发现缓存失效 commodityId: "+commodityId);
+            try{
+                // 加锁防止多线程更新缓存
+                distributedLock.lock(commodityId);
+                // 再次校验是否被其他线程更新缓存
+                commodityDetailVo = doGet(commodityId);
+                // 如果没有被更新则开始更新
+                if (commodityDetailVo == null){
+                    log.debug("开始更新缓存 commodityId: "+commodityId);
+                    // 查出数据
+                    Commodity commodity = commodityMapper.selectByPrimaryKey(commodityId);
+                    log.debug("查出数据 commodity: "+commodity);
+                    // 转化数据，若为空则不会进行转化
+                    commodityDetailVo = Transform.transformCommodityToCommodityDetailVo(commodity);
+                    // 数据查询为空，表明发生缓存穿透
+                    if (commodityDetailVo == null){
+                        log.debug("查出数据为空，存入临时值 TEMP_COMMODITY: "+TEMP_COMMODITY);
+                        // 存入临时值
+                        commodityDetailVo = TEMP_COMMODITY;
+                        TEMP_COMMODITY.setId(commodityId);
+                        saveCommodityDetailVo(TEMP_COMMODITY,10L);
+                    }else{
+                        log.debug("查出数据不为空，存入 commodityDetailVo: "+commodityDetailVo);
+                        saveCommodityDetailVo(commodityDetailVo);
+                    }
+                }
+            }catch (DistributedLockException e){
+                // 抛出错误
+                throw e;
+            } finally {
+                distributedLock.unlock(commodityId);
+            }
+        }
+        // 直接查到临时值或拿锁后查到临时值，或插入临时值都将导致进入该条件
+        // commodityDetailVo 为处理后的值，可用 == 直接判断对象是否为同一个
+        if (commodityDetailVo == TEMP_COMMODITY){
+            log.debug("返回结果：发生缓存穿透");
+            // 发生缓存穿透，返回空值表示异常
+            return null;
+        }
+        log.debug("返回结果 commodityDetailVo: "+commodityDetailVo);
+        return commodityDetailVo;
+    }
+
+    /**
+     * 查询 commodity
+     * @param commodityId
+     * @return null 则缓存失效，TEMP_COMMODITY 则缓存穿透
+     */
+    private CommodityDetailVo doGet(Long commodityId){
+        log.debug("尝试查询 commodityId: "+commodityId);
         // 从缓存取信息用于校验
         ArrayList<Object> list = new ArrayList<>(9);
         list.add("name");
@@ -71,14 +130,22 @@ public class RedisCacheManager implements CacheManager{
         list.add("createdAt");
         list.add("updatedAt");
         List<Object> multiGet = redisTemplateForCommodityDetailVo.opsForHash().multiGet(getKey(commodityId),list);
-        // 查询到发生缓存穿透时存入的临时值，直接返回，跳过查询数据库阶段
-        if (multiGet.get(3) != null && Integer.MIN_VALUE == (int)multiGet.get(3)){
+        log.debug("查询到的数据为: "+multiGet.toString());
+        // 查看 id 字段值
+        if(multiGet.get(3) == null){
+            log.debug("检测到空值，返回 null");
+            return null;
+        } else if ((int)multiGet.get(3) == TEMP_COMMODITY_STOCK){
+            log.debug("检测到缓存穿透临时值，返回 TEMP_COMMODITY");
+            // 缓存穿透
             return TEMP_COMMODITY;
-        }
-        // 只要有一个为空则不合法
-        for (Object obj : multiGet){
-            if (obj == null){
-                return null;
+        }else{
+            // 检查各个字段是否有空值
+            for (Object obj : multiGet){
+                if (obj == null){
+                    log.debug("检测到空值，返回 null");
+                    return null;
+                }
             }
         }
         CommodityDetailVo commodityDetailVo = new CommodityDetailVo();
@@ -98,6 +165,16 @@ public class RedisCacheManager implements CacheManager{
     @Override
     public void removeCommodityDetailVo(Long commodityId) {
         redisTemplateForCommodityDetailVo.delete(getKey(commodityId));
+    }
+
+    @Override
+    public boolean decrementStock(Long commodityId) {
+        return redisTemplateForCommodityDetailVo.opsForHash().increment(getKey(commodityId),"stock",-1) >= 0;
+    }
+
+    @Override
+    public void incrementStock(Long commodityId) {
+        redisTemplateForCommodityDetailVo.opsForHash().increment(getKey(commodityId),"stock",1);
     }
 
     private String getKey(Long commodityId){

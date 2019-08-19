@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 
 
 public class CookiesManager {
+    public static int DEFAULT_COOKIES_MAX_AGE = 3600*24*15;
+
     public static void setCookie(String sessionId,int maxAge,HttpServletResponse httpServletResponse){
         if (httpServletResponse == null)
             return;

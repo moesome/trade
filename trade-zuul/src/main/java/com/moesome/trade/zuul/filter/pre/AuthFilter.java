@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moesome.trade.common.response.Result;
 import com.moesome.trade.user.common.response.vo.UserDetailVo;
-import com.moesome.trade.zuul.manager.RedisManager;
+
+import com.moesome.trade.zuul.manager.SessionManager;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
@@ -23,7 +24,7 @@ import java.util.*;
 @Slf4j
 public class AuthFilter extends ZuulFilter{
     @Autowired
-    private RedisManager redisManager;
+    private SessionManager sessionManager;
 
     private final String AUTHORIZED_ERR;
 
@@ -55,7 +56,7 @@ public class AuthFilter extends ZuulFilter{
         matches.add("POST-/users/login");
         // 商品展示
         matches.add("GET-/commodities");
-        log.info(method+"-"+requestURI);
+        log.debug("接收到路由"+method+"-"+requestURI);
         if (matches.contains(method+"-"+requestURI)){
             log.debug(request.getLocalAddr()+"->"+method+"->"+requestURI+"跳过授权");
             return false;
@@ -76,14 +77,14 @@ public class AuthFilter extends ZuulFilter{
                     sessionId = cookie.getValue();
                 }
             }
-            log.info(request.getLocalAddr()+"->"+request.getRequestURI()+"->sessionId="+sessionId);
+            log.debug("cookies 中成功获取 session ，"+request.getLocalAddr()+"->"+request.getRequestURI()+"->sessionId="+sessionId);
             // 校验
             if (!StringUtils.isEmpty(sessionId)){
                 // 找到用户
-                UserDetailVo userDetailVo = redisManager.getUserDetailVoBySessionId(sessionId);
-                if (userDetailVo != null){
-                    log.debug(request.getLocalAddr()+"->"+request.getRequestURI()+"->sessionId="+sessionId+"添加用户 ID 头："+userDetailVo.getId().toString());
-                    requestContext.addZuulRequestHeader("user-id",userDetailVo.getId().toString());
+                String userId = sessionManager.getSessionMessage(sessionId,"userId");
+                if (userId != null){
+                    log.debug("认证成功"+request.getLocalAddr()+"->"+request.getRequestURI()+"->sessionId="+sessionId+"添加用户 ID 头："+userId);
+                    requestContext.addZuulRequestHeader("user-id",userId);
                     return null;
                 }
             }

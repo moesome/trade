@@ -1,6 +1,9 @@
 spring:
   application:
     name: trade-zuul
+  mvc:
+    servlet:
+      load-on-startup: 1
   redis:
     host: localhost
     port: 6379
@@ -37,6 +40,15 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMillsecond: 6000
+
 zuul:
   sensitiveHeaders:
   ignored-services: "*"
@@ -49,11 +61,11 @@ zuul:
       path: /commodities/**
       service-id: trade-commodity-server
       strip-prefix: false
+    trade-order-server:
+      path: /*_orders/**
+      service-id: trade-order-server
+      strip-prefix: false
   retryable: true
-hystrix:
-  command:
-    default:
-      execution:
-        isolation:
-          thread:
-            timeoutInMillsecond: 6000
+logging:
+  level:
+    com.moesome: debug

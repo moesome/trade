@@ -11,5 +11,19 @@
 
     <artifactId>trade-user-client</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.moesome</groupId>
+            <artifactId>trade-user-common</artifactId>
+            <version>1</version>
+        </dependency>
+    </dependencies>
 </project>

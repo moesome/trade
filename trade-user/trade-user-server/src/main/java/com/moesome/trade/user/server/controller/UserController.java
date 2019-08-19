@@ -30,8 +30,8 @@ public class UserController {
     }
 
     @GetMapping("check")
-    public Result check(@CookieValue String sessionId, HttpServletResponse httpServletResponse){
-        return userService.check(sessionId,httpServletResponse);
+    public Result check(@RequestHeader("user-id") Long userId,@CookieValue String sessionId, HttpServletResponse httpServletResponse){
+        return userService.check(userId,sessionId,httpServletResponse);
     }
 
     // 用户操作相关
@@ -41,16 +41,19 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public Result show(@CookieValue String sessionId, @PathVariable Long id){
-        return userService.show(sessionId,id);
+    public Result show(@RequestHeader("user-id") Long userId,@PathVariable Long id){
+        if (!userId.equals(id)){
+            return Result.AUTHORIZED_ERR;
+        }
+        return userService.show(id);
     }
 
     @PatchMapping("{id}")
-    public Result update(@RequestHeader("user-id") Long userId,@CookieValue String sessionId,@RequestBody UserStoreVo userStoreVo, @PathVariable Long id){
+    public Result update(@RequestHeader("user-id") Long userId,@RequestBody UserStoreVo userStoreVo, @PathVariable Long id){
         if (!userId.equals(id)){
             return UserResult.AUTHORIZED_ERR;
         }
-        return userService.update(userId,userStoreVo,sessionId);
+        return userService.update(userId,userStoreVo);
     }
 
     // 暂不开启入口

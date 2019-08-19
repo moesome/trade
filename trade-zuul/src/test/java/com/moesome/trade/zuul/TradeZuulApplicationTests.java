@@ -1,6 +1,7 @@
 package com.moesome.trade.zuul;
 
-import com.moesome.trade.zuul.manager.RedisManager;
+
+import com.moesome.trade.zuul.manager.SessionManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +11,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class TradeZuulApplicationTests {
-	@Autowired
-	private RedisManager redisManager;
+    @Autowired
+    private SessionManager sessionManager;
 
-	@Test
-	public void contextLoads() {
-//		String userBySessionId = redisService.getUserDetailVoBySessionId("ce9904b60f4342ad80f8be91791d7eb1");
-//		System.out.println(userBySessionId);
-	}
+    @Test
+    public void test(){
+        Object userId = sessionManager.getSessionMessage("794d84f0-b83c-4be4-8965-895140a1f60e", "userId");
+        System.out.println(userId);
+        String userId2 = sessionManager.getSessionMessage("794d84f0-b83c-4be4-8965-895140a1f60e", "userId");
+        System.out.println(userId2);
+        String userId3 = sessionManager.<String>getSessionMessage("794d84f0-b83c-4be4-8965-895140a1f60e", "userId");
+        System.out.println(userId3);
+    }
 
 }

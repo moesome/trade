@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moesome.trade.order.server.model.dao.CommodityOrderMapper">
+  <resultMap id="BaseResultMap" type="com.moesome.trade.order.server.model.domain.CommodityOrder">
+    <!--@mbg.generated-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="commodity_id" jdbcType="BIGINT" property="commodityId" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, user_id, commodity_id, created_at, `status`, price
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from commodity_order
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!--@mbg.generated-->
+    delete from commodity_order
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.moesome.trade.order.server.model.domain.CommodityOrder" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into commodity_order (user_id, commodity_id, created_at, 
+      `status`, price)
+    values (#{userId,jdbcType=BIGINT}, #{commodityId,jdbcType=BIGINT}, #{createdAt,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=TINYINT}, #{price,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.moesome.trade.order.server.model.domain.CommodityOrder" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into commodity_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="commodityId != null">
+        commodity_id,
+      </if>
+      <if test="createdAt != null">
+        created_at,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="commodityId != null">
+        #{commodityId,jdbcType=BIGINT},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.moesome.trade.order.server.model.domain.CommodityOrder">
+    <!--@mbg.generated-->
+    update commodity_order
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="commodityId != null">
+        commodity_id = #{commodityId,jdbcType=BIGINT},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.moesome.trade.order.server.model.domain.CommodityOrder">
+    <!--@mbg.generated-->
+    update commodity_order
+    set user_id = #{userId,jdbcType=BIGINT},
+      commodity_id = #{commodityId,jdbcType=BIGINT},
+      created_at = #{createdAt,jdbcType=TIMESTAMP},
+      `status` = #{status,jdbcType=TINYINT},
+      price = #{price,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+<!--  <select id="selectCommodityOrderDetailAndCommodityDetailVoByUserIdPagination"-->
+<!--          resultType="com.moesome.trade.order.common.response.vo.CommodityOrderDetailAndCommodityDetailVo">-->
+<!--      select-->
+<!--          commodity_order.id as commodityOrderId,-->
+<!--          commodity_order.created_at as commodityOrderCreatedAt,-->
+<!--          commodity_order.status as commodityOrderStatus,-->
+<!--          commodity.id as commodityId,-->
+<!--          commodity.name as commodityName,-->
+<!--          commodity.user_id as commodityUserId,-->
+<!--          commodity.detail as commodityDetail-->
+<!--      from-->
+<!--          commodity_order-->
+<!--      inner join-->
+<!--          commodity-->
+<!--      on-->
+<!--          commodity_order.commodity_id = commodity.id-->
+<!--      where commodity_order.user_id = #{userId} order by commodity_order.id ${order} limit #{start},#{count}-->
+<!--  </select>-->
+  <select id="countByUserId" resultType="java.lang.Integer">
+    select count(*) from commodity_order where user_id = #{userId,jdbcType=BIGINT}
+  </select>
+  <select id="selectByUserId" resultMap="BaseResultMap">
+    select * from commodity_order where user_id = #{userId,jdbcType=BIGINT}
+  </select>
+</mapper>

@@ -12,7 +12,6 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 
 @Configuration
 public class RedisConfig {
-	public static final int EXPIRE_SECOND = 3600*24*7;
 
 	@Autowired
 	private RedisProperties redisProperties;

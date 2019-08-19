@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moesome.trade.user.server.model.dao.MessageUserMapper">
+  <resultMap id="BaseResultMap" type="com.moesome.trade.user.server.model.domain.MessageUser">
+    <!--@mbg.generated-->
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="coin_decrement" jdbcType="DECIMAL" property="coinDecrement" />
+    <result column="coin_decrement_at" jdbcType="TIMESTAMP" property="coinDecrementAt" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    order_id, user_id, coin_decrement, coin_decrement_at, created_at
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from message_user
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    <!--@mbg.generated-->
+    delete from message_user
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.moesome.trade.user.server.model.domain.MessageUser">
+    <!--@mbg.generated-->
+    insert into message_user (order_id, user_id, coin_decrement, 
+      coin_decrement_at, created_at)
+    values (#{orderId,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{coinDecrement,jdbcType=DECIMAL}, 
+      #{coinDecrementAt,jdbcType=TIMESTAMP}, #{createdAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.moesome.trade.user.server.model.domain.MessageUser">
+    <!--@mbg.generated-->
+    insert into message_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="coinDecrement != null">
+        coin_decrement,
+      </if>
+      <if test="coinDecrementAt != null">
+        coin_decrement_at,
+      </if>
+      <if test="createdAt != null">
+        created_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="coinDecrement != null">
+        #{coinDecrement,jdbcType=DECIMAL},
+      </if>
+      <if test="coinDecrementAt != null">
+        #{coinDecrementAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdAt != null">
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.moesome.trade.user.server.model.domain.MessageUser">
+    <!--@mbg.generated-->
+    update message_user
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="coinDecrement != null">
+        coin_decrement = #{coinDecrement,jdbcType=DECIMAL},
+      </if>
+      <if test="coinDecrementAt != null">
+        coin_decrement_at = #{coinDecrementAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdAt != null">
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.moesome.trade.user.server.model.domain.MessageUser">
+    <!--@mbg.generated-->
+    update message_user
+    set user_id = #{userId,jdbcType=BIGINT},
+      coin_decrement = #{coinDecrement,jdbcType=DECIMAL},
+      coin_decrement_at = #{coinDecrementAt,jdbcType=TIMESTAMP},
+      created_at = #{createdAt,jdbcType=TIMESTAMP}
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+</mapper>
