@@ -7,12 +7,10 @@ import java.util.List;
 public interface CommodityClientService {
     /**
      * 根据用户 id 返回该用户创建的商品页面
-     * @param userId
-     * @param order
-     * @param page
+     * @param commodityIdList
      * @return
      */
-    List<CommodityDetailVo> getByUserIdPagination(Long userId, String order, Integer page);
+    List<CommodityDetailVo> getByCommodityIdList(List<Long> commodityIdList);
 
     /**
      * 根据商品 id 查出商品信息，先从缓存查，若缓存为空则从数据库查并刷新缓存。
@@ -33,4 +31,7 @@ public interface CommodityClientService {
      * @param commodityId
      */
     void incrementStock(Long commodityId);
+
+
+    List<CommodityDetailVo> getByUserId(Long userId);
 }

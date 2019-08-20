@@ -9,8 +9,8 @@ import java.util.List;
 @FeignClient("trade-commodity-server")
 @RequestMapping("client")
 public interface CommodityClient {
-    @GetMapping("getByUserIdPagination")
-    List<CommodityDetailVo> getByUserIdPagination(@PathVariable Long userId, @RequestParam String order,@RequestParam Integer page);
+    @PostMapping("getByCommodityIdList")
+    List<CommodityDetailVo> getByCommodityIdList(@RequestBody List<Long> commodityIdList);
 
     @GetMapping("getByCommodityId")
     CommodityDetailVo getByCommodityId(@RequestParam Long commodityId);
@@ -20,4 +20,7 @@ public interface CommodityClient {
 
     @PatchMapping("incrementStock")
     void incrementStock(@RequestParam Long commodityId);
+
+    @GetMapping("getByUserId")
+    List<CommodityDetailVo> getByUserId(@RequestParam Long userId);
 }

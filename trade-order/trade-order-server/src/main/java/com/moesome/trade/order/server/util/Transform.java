@@ -8,7 +8,7 @@ public class Transform {
     public static CommodityOrderDetailAndCommodityDetailVo combineCommodityOrderDetailAndCommodityDetailVo(CommodityOrder commodityOrder, CommodityDetailVo commodityDetailVo){
         CommodityOrderDetailAndCommodityDetailVo combine = new CommodityOrderDetailAndCommodityDetailVo();
         combine.setCommodityOrderCreatedAt(commodityOrder.getCreatedAt());
-        combine.setCommodityOrderId(commodityOrder.getCommodityId());
+        combine.setCommodityOrderId(commodityOrder.getId());
         combine.setCommodityOrderStatus(commodityOrder.getStatus());
         combine.setCommodityDetail(commodityDetailVo.getDetail());
         combine.setCommodityId(commodityDetailVo.getId());

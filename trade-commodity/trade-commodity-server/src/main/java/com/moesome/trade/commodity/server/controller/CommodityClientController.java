@@ -13,9 +13,9 @@ public class CommodityClientController {
     @Autowired
     private CommodityClientService commodityClientService;
 
-    @GetMapping("getByUserIdPagination")
-    public List<CommodityDetailVo> getByUserIdPagination( Long userId, String order, Integer page){
-        return commodityClientService.getByUserIdPagination(userId,order,page);
+    @PostMapping("getByCommodityIdList")
+    public List<CommodityDetailVo> getByCommodityIdList(@RequestBody List<Long> commodityIdList){
+        return commodityClientService.getByCommodityIdList(commodityIdList);
     }
 
     @GetMapping("getByCommodityId")
@@ -31,5 +31,10 @@ public class CommodityClientController {
     @PatchMapping("incrementStock")
     public void incrementStock(Long commodityId){
         commodityClientService.incrementStock(commodityId);
+    }
+
+    @GetMapping("getByUserId")
+    List<CommodityDetailVo> getByUserId(@RequestParam Long userId){
+        return commodityClientService.getByUserId(userId);
     }
 }

@@ -117,7 +117,6 @@ public class RedisCacheManager implements CacheManager{
      * @return null 则缓存失效，TEMP_COMMODITY 则缓存穿透
      */
     private CommodityDetailVo doGet(Long commodityId){
-        log.debug("尝试查询 commodityId: "+commodityId);
         // 从缓存取信息用于校验
         ArrayList<Object> list = new ArrayList<>(9);
         list.add("name");

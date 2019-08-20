@@ -56,6 +56,8 @@ public class AuthFilter extends ZuulFilter{
         matches.add("POST-/users/login");
         // 商品展示
         matches.add("GET-/commodities");
+        matches.add("GET-/recharge/return");
+        matches.add("GET-/recharge/notify");
         log.debug("接收到路由"+method+"-"+requestURI);
         if (matches.contains(method+"-"+requestURI)){
             log.debug(request.getLocalAddr()+"->"+method+"->"+requestURI+"跳过授权");

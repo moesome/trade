@@ -29,9 +29,9 @@ public class CommodityOrderController {
         return orderService.store(commodityOrderVo);
     }
 
-    @GetMapping("check/{spikeId}")
-    public Result check(@RequestHeader("user-id") Long userId, @PathVariable Long spikeId){
-        return orderService.check(userId,spikeId);
+    @GetMapping("check/{commodityId}")
+    public Result check(@RequestHeader("user-id") Long userId, @PathVariable Long commodityId){
+        return orderService.check(userId,commodityId);
     }
 
     //	@DeleteMapping("{id}")

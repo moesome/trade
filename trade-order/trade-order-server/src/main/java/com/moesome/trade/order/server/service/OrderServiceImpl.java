@@ -54,17 +54,27 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Result index(Long userId, String order, Integer page) {
-//        List<CommodityOrderDetailAndCommodityDetailVo> commodityDetailVos = commodityOrderMapper.selectCommodityOrderDetailAndCommodityDetailVoByUserIdPagination(userId,order, (page - 1) * 10, 10);
-        List<CommodityOrder> commodityOrders = commodityOrderMapper.selectByUserId(userId);
-        List<CommodityDetailVo> commodityDetailVos = commodityClient.getByUserIdPagination(userId, order, page);
+        // 查出当前用户的部分订单
+        List<CommodityOrder> commodityOrders = commodityOrderMapper.selectByUserIdPagination(userId, order,(page - 1) * 10,10);
+        List<Long> commodityIdList = new ArrayList<>();
+        if (commodityOrders.isEmpty()){
+            return Result.SUCCESS;
+        }
+        for (CommodityOrder commodityOrder : commodityOrders){
+            commodityIdList.add(commodityOrder.getCommodityId());
+        }
+        // 根据订单取出商品详细信息
+        List<CommodityDetailVo> commodityDetailVos = commodityClient.getByCommodityIdList(commodityIdList);
         Integer count = commodityOrderMapper.countByUserId(userId);
-        List<CommodityOrderDetailAndCommodityDetailVo> result = new ArrayList<>(10);
+        List<CommodityOrderDetailAndCommodityDetailVo> result = new ArrayList<>();
         Iterator<CommodityOrder> commodityOrderIterator = commodityOrders.iterator();
-        Iterator<CommodityDetailVo> commodityDetailVoIterator = commodityDetailVos.iterator();
         while (commodityOrderIterator.hasNext()){
             CommodityOrder commodityOrder = commodityOrderIterator.next();
-            CommodityDetailVo commodityDetailVo = commodityDetailVoIterator.next();
-            result.add(Transform.combineCommodityOrderDetailAndCommodityDetailVo(commodityOrder,commodityDetailVo));
+            for (CommodityDetailVo commodityDetailVo : commodityDetailVos) {
+                if (commodityDetailVo.getId().equals(commodityOrder.getCommodityId())){
+                    result.add(Transform.combineCommodityOrderDetailAndCommodityDetailVo(commodityOrder,commodityDetailVo));
+                }
+            }
         }
         return new CommodityOrderResult(SuccessCode.OK,result,count);
     }
@@ -154,12 +164,29 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Result check(Long userId, Long spikeId) {
-        return null;
+    public Result check(Long userId, Long commodityId) {
+        // 取轮询只用了用户 id 和商品 id
+        int result = cacheManager.getCommodityOrderResult(userId,commodityId);
+        if (result == 0){
+            // 请求还在队列中
+            return CommodityOrderResult.RESOLVING;
+        }else{
+            if (result == -1){
+                // 请求失败
+                return CommodityOrderResult.FAILED;
+            }else{
+                return Result.SUCCESS;
+            }
+        }
     }
 
     @Override
     public Result delete(Long userId, Long id, Long spikeId) {
-        return null;
+        int delete = commodityOrderMapper.deleteByPrimaryKey(id);
+        if (delete != 1){
+            // 删除失败
+            return Result.REQUEST_ERR;
+        }
+        return Result.SUCCESS;
     }
 }

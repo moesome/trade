@@ -24,7 +24,11 @@ public interface CommodityMapper {
 
     List<Commodity> selectByUserIdPagination(Long userId, String order, int start, int count);
 
+    List<Commodity> selectByUserId(Long userId);
+
     Integer countByUserId();
 
     List<Commodity> selectAll();
+
+    List<Commodity> selectByCommodityIdList(List<Long> commodityIdList);
 }

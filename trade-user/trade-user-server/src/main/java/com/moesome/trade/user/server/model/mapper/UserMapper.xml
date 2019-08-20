@@ -142,4 +142,7 @@
   <select id="selectByUsername" resultMap="BaseResultMap">
     select * from user where username = #{username}
   </select>
+  <update id="incrementCoin">
+    update user set coin = coin + #{price,jdbcType=DECIMAL} where id = #{userId,jdbcType=BIGINT}
+  </update>
 </mapper>

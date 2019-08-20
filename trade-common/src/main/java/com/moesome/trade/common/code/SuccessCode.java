@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public enum  SuccessCode implements Code{
 	OK(0,"成功"),
+	RESOLVING(1000,"处理中")
 	;
 
 	private int code;

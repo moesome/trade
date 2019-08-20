@@ -23,17 +23,17 @@ public interface OrderService {
     /**
      * 处理客户端轮询检测订单状态
      * @param userId
-     * @param spikeId
+     * @param commodityId
      * @return
      */
-    Result check(Long userId, Long spikeId);
+    Result check(Long userId, Long commodityId);
 
     /**
      * 删除订单，暂未开放入口
      * @param userId
      * @param id
-     * @param spikeId
+     * @param commodityId
      * @return
      */
-    Result delete(Long userId, Long id, Long spikeId);
+    Result delete(Long userId, Long id, Long commodityId);
 }

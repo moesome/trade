@@ -20,8 +20,8 @@ public class CommodityClientServiceImpl implements CommodityClientService {
     private CacheManager cacheManager;
 
     @Override
-    public List<CommodityDetailVo> getByUserIdPagination(Long userId, String order, Integer page) {
-        List<Commodity> commodityList = commodityMapper.selectByUserIdPagination(userId, order, (page - 1) * 10, 10);
+    public List<CommodityDetailVo> getByCommodityIdList(List<Long> commodityIdList) {
+        List<Commodity> commodityList = commodityMapper.selectByCommodityIdList(commodityIdList);
         return commodityList
                 .stream()
                 .map(Transform::transformCommodityToCommodityDetailVo)
@@ -41,5 +41,14 @@ public class CommodityClientServiceImpl implements CommodityClientService {
     @Override
     public void incrementStock(Long commodityId) {
         cacheManager.incrementStock(commodityId);
+    }
+
+    @Override
+    public List<CommodityDetailVo> getByUserId(Long userId) {
+        List<Commodity> commodityList = commodityMapper.selectByUserId(userId);
+        return commodityList
+                .stream()
+                .map(Transform::transformCommodityToCommodityDetailVo)
+                .collect(Collectors.toList());
     }
 }

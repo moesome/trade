@@ -2,6 +2,8 @@ package com.moesome.trade.user.server.model.dao;
 
 import com.moesome.trade.user.server.model.domain.User;
 
+import java.math.BigDecimal;
+
 public interface UserMapper {
     int deleteByPrimaryKey(Long id);
 
@@ -16,4 +18,6 @@ public interface UserMapper {
     int updateByPrimaryKey(User record);
 
     User selectByUsername(String username);
+
+    void incrementCoin(BigDecimal price, Long userId);
 }

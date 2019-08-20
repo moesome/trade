@@ -2,11 +2,13 @@ package com.moesome.trade.user.server.service;
 
 import com.moesome.trade.common.manager.DistributedLock;
 import com.moesome.trade.common.message.CommodityOrderMessage;
+import com.moesome.trade.user.server.manager.CacheManager;
 import com.moesome.trade.user.server.manager.MqSenderManager;
 import com.moesome.trade.user.server.model.dao.MessageUserMapper;
 import com.moesome.trade.user.server.model.dao.UserMapper;
 import com.moesome.trade.user.server.model.domain.MessageUser;
 import com.moesome.trade.user.server.model.domain.User;
+import com.moesome.trade.user.server.util.Transform;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -30,6 +32,9 @@ public class MessageResolverServiceImpl implements MessageResolverService{
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     @Autowired
     private MqSenderManager mqSenderManager;
@@ -63,20 +68,23 @@ public class MessageResolverServiceImpl implements MessageResolverService{
                 User userForDecrementStock = new User();
                 userForDecrementStock.setId(userId);
                 userForDecrementStock.setCoin(coin);
-                // 减库存
+                // 减金币
                 userMapper.updateByPrimaryKeySelective(userForDecrementStock);
+                // 刷缓存
+                user.setCoin(coin);
+                cacheManager.saveUserDetailVo(Transform.transformUserToUserDetailVo(user));
                 // 写入该流程处理过的信息
                 commodityOrderMessage.setCoinDecrementAt(now);
-                // 状态 1 已扣库存
-                commodityOrderMessage.setStatus((byte)2);
+                // 状态 3 已扣金币
+                commodityOrderMessage.setStatus((byte)3);
                 // 发送消息到队列
                 mqSenderManager.sendToOrderSucceedQueue(commodityOrderMessage);
                 return 0;
             });
             if (execute != null && execute == -1){
                 // 减库存失败，发送订单失败消息
-                // 状态 -2 在扣金币阶段发生异常
-                commodityOrderMessage.setStatus((byte)-2);
+                // 状态 -3 在扣金币阶段发生异常
+                commodityOrderMessage.setStatus((byte)-3);
                 mqSenderManager.sendToOrderFailedQueue(commodityOrderMessage);
             }
             log.debug("处理成功 commodityOrderMessage"+commodityOrderMessage);

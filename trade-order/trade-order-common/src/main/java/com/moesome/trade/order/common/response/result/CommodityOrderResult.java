@@ -2,6 +2,7 @@ package com.moesome.trade.order.common.response.result;
 
 import com.moesome.trade.common.code.Code;
 import com.moesome.trade.common.code.ErrorCode;
+import com.moesome.trade.common.code.SuccessCode;
 import com.moesome.trade.common.response.Result;
 import com.moesome.trade.order.common.response.vo.CommodityOrderDetailAndCommodityDetailVo;
 import lombok.Data;
@@ -16,6 +17,8 @@ public class CommodityOrderResult extends Result<List<CommodityOrderDetailAndCom
     public static CommodityOrderResult TIME_LIMIT_NOT_ARRIVED = new CommodityOrderResult(ErrorCode.TIME_LIMIT_NOT_ARRIVED);
     public static CommodityOrderResult TIME_LIMIT_EXCEED = new CommodityOrderResult(ErrorCode.TIME_LIMIT_EXCEED);
     public static CommodityOrderResult LIMIT_EXCEED = new CommodityOrderResult(ErrorCode.LIMIT_EXCEED);
+    public static CommodityOrderResult RESOLVING = new CommodityOrderResult(SuccessCode.RESOLVING);
+    public static CommodityOrderResult FAILED = new CommodityOrderResult(ErrorCode.FAILED);
 
     public CommodityOrderResult(Code code) {
         super(code);

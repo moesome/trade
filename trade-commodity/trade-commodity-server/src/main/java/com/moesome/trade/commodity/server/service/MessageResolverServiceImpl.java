@@ -71,16 +71,16 @@ public class MessageResolverServiceImpl implements MessageResolverService{
                 commodityMapper.updateByPrimaryKeySelective(commodityForDecrementStock);
                 // 写入该流程处理过的信息
                 commodityOrderMessage.setStockDecrementAt(now);
-                // 状态 1 已扣库存
-                commodityOrderMessage.setStatus((byte)1);
+                // 状态 2 已扣库存
+                commodityOrderMessage.setStatus((byte)2);
                 // 发送消息到队列
                 mqSenderManager.sendToCoinDecrementQueue(commodityOrderMessage);
                 return 0;
             });
             if (execute != null && execute == -1){
                 // 减库存失败，发送订单失败消息
-                // 状态 -1 在扣库存阶段发生异常
-                commodityOrderMessage.setStatus((byte)-1);
+                // 状态 -2 在扣库存阶段发生异常
+                commodityOrderMessage.setStatus((byte)-2);
                 mqSenderManager.sendToOrderFailedQueue(commodityOrderMessage);
             }
             log.debug("处理成功 commodityOrderMessage"+commodityOrderMessage);

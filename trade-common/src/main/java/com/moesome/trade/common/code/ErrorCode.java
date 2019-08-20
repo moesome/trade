@@ -14,7 +14,7 @@ public enum ErrorCode implements Code{
 	TIME_LIMIT_EXCEED(-1004,"超过结束时间"),
 	TIME_LIMIT_NOT_ARRIVED(-1005,"未到达开始时间"),
 	LIMIT_EXCEED(-1006,"超出数量限制"),
-
+	FAILED(-1007,"库存或金币余额不足"),
 
 	// 认证相关错误
 	AUTHORIZED_ERR(-2000,"认证异常，请重新登录。"),
@@ -34,7 +34,6 @@ public enum ErrorCode implements Code{
 
 
 	IN_QUEUE(-512,"请求在队列中"),
-	FAILED(-513,"请求失败"),
 	;
 
 	private int code;

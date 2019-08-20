@@ -20,6 +20,7 @@ public class RabbitMqListenerManager implements MqListenerManager{
     private MessageResolverService messageResolverService;
 
     @RabbitListener(queues = QueueConfig.STOCK_DECREMENT_QUEUE)
+    @Override
     public void receiveStockDecrement(CommodityOrderMessage commodityOrderMessage, Channel channel, Message message){
         log.debug("减库存队列收到消息: "+commodityOrderMessage);
         try{
@@ -43,6 +44,7 @@ public class RabbitMqListenerManager implements MqListenerManager{
     }
 
     @RabbitListener(queues = QueueConfig.STOCK_ROLLBACK_QUEUE)
+    @Override
     public void receiveStockRollback(CommodityOrderMessage commodityOrderMessage, Channel channel, Message message){
         log.debug("回滚库存队列收到消息: "+commodityOrderMessage);
         try{

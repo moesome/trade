@@ -19,15 +19,17 @@ public interface CacheManager {
 
     /**
      * 存入订单状态，一分钟后过期
-     * @param orderId
+     * @param userId
+     * @param commodityId
      * @param result 1：已完成，-1：处理失败
      */
-    void saveCommodityOrderResult(Long orderId,int result);
+    void saveCommodityOrderResult(Long userId,Long commodityId,int result);
 
     /**
      * 取出订单状态
-     * @param orderId
+     * @param userId
+     * @param commodityId
      * @return 1：已完成，-1：处理失败，0：未处理该订单
      */
-    int getCommodityOrderResult(Long orderId);
+    int getCommodityOrderResult(Long userId,Long commodityId);
 }

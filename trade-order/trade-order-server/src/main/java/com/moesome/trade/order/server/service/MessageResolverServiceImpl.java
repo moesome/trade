@@ -59,8 +59,8 @@ public class MessageResolverServiceImpl implements MessageResolverService{
                 public Integer doInTransaction(TransactionStatus status) {
                     messageCommodityOrderMapper.insert(messageCommodityOrder);
                     log.debug("处理失败状态为: "+commodityOrderMessage.getStatus()+" 的订单");
-                    log.debug("设置 orderId:"+orderId+"状态为 FAILED");
-                    cacheManager.saveCommodityOrderResult(orderId, RedisCacheManager.FAILED);
+                    log.debug("在缓存中设置 orderId:"+orderId+"状态为 FAILED");
+                    cacheManager.saveCommodityOrderResult(commodityOrderMessage.getUserId(),commodityOrderMessage.getCommodityId(), RedisCacheManager.FAILED);
                     CommodityOrderVo commodityOrderVo = new CommodityOrderVo();
                     commodityOrderVo.setUserId(commodityOrderMessage.getUserId());
                     commodityOrderVo.setCommodityId(commodityOrderMessage.getCommodityId());
@@ -71,7 +71,7 @@ public class MessageResolverServiceImpl implements MessageResolverService{
                     cacheManager.removeCommodityOrderVo(commodityOrderVo);
                     log.debug("回滚缓存的库存");
                     commodityClient.incrementStock(commodityOrderMessage.getCommodityId());
-                    if (commodityOrderMessage.getStatus() == -2){
+                    if (commodityOrderMessage.getStatus() == -3){
                         // 需要额外回滚数据库库存
                         mqSenderManager.sendToStockRollbackQueue(commodityOrderMessage);
                     }
@@ -111,8 +111,8 @@ public class MessageResolverServiceImpl implements MessageResolverService{
                     commodityOrder.setId(orderId);
                     commodityOrder.setStatus((byte)0);
                     commodityOrderMapper.updateByPrimaryKeySelective(commodityOrder);
-                    log.debug("处理成功订单成功 orderId: "+orderId);
-                    cacheManager.saveCommodityOrderResult(orderId, RedisCacheManager.SUCCESS);
+                    log.debug("在缓存中设置 orderId:"+orderId+"状态为 SUCCESS");
+                    cacheManager.saveCommodityOrderResult(commodityOrderMessage.getUserId(),commodityOrderMessage.getCommodityId(), RedisCacheManager.SUCCESS);
                     return null;
                 }
             });

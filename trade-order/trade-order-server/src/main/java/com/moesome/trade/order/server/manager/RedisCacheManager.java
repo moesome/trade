@@ -32,13 +32,13 @@ public class RedisCacheManager implements CacheManager {
     }
 
     @Override
-    public void saveCommodityOrderResult(Long orderId,int result) {
-        redisTemplateForCommodityOrderVo.opsForValue().set("commodity_order_result:"+orderId,String.valueOf(result),1, TimeUnit.MINUTES);
+    public void saveCommodityOrderResult(Long userId,Long commodityId,int result) {
+        redisTemplateForCommodityOrderVo.opsForValue().set("commodity_order_result-userId:"+userId+"-commodityId:"+commodityId,String.valueOf(result),1, TimeUnit.MINUTES);
     }
 
     @Override
-    public int getCommodityOrderResult(Long orderId) {
-        String s = redisTemplateForCommodityOrderVo.opsForValue().get("commodity_order_result:" + orderId);
+    public int getCommodityOrderResult(Long userId,Long commodityId) {
+        String s = redisTemplateForCommodityOrderVo.opsForValue().get("commodity_order_result-userId:"+userId+"-commodityId:"+commodityId);
         if (s == null){
             return 0;
         }

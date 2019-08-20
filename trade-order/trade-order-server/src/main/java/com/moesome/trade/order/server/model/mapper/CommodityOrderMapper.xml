@@ -124,7 +124,13 @@
   <select id="countByUserId" resultType="java.lang.Integer">
     select count(*) from commodity_order where user_id = #{userId,jdbcType=BIGINT}
   </select>
-  <select id="selectByUserId" resultMap="BaseResultMap">
-    select * from commodity_order where user_id = #{userId,jdbcType=BIGINT}
+  <select id="selectByUserIdPagination" resultMap="BaseResultMap">
+    select * from commodity_order where user_id = #{userId,jdbcType=BIGINT} order by id ${order} limit #{start},#{count}
+  </select>
+  <select id="selectByCommoditiesId" resultMap="BaseResultMap">
+    select * from commodity_order where commodity_id in
+    <foreach item="item" collection="list" separator="," open="(" close=")">
+        #{item.id}
+    </foreach>
   </select>
 </mapper>

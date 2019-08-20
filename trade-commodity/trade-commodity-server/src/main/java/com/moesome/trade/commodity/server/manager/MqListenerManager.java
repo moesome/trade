@@ -10,5 +10,5 @@ public interface MqListenerManager {
      * @param commodityOrderMessage
      */
     void receiveStockDecrement(CommodityOrderMessage commodityOrderMessage, Channel channel, Message message);
-
+    void receiveStockRollback(CommodityOrderMessage commodityOrderMessage, Channel channel, Message message);
 }

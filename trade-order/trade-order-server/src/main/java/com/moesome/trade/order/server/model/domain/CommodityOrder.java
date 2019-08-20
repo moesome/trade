@@ -20,11 +20,13 @@ public class CommodityOrder {
     private Date createdAt;
 
     /**
-    * 1.待发货
-    2.用户催单
-    3.所有者已发送奖品
-    4.完成订单
-    5.订单异常
+     * -3：扣金币失败<br />
+     * -2：扣库存失败<br />
+     * 0：成功<br />
+     * 1：订单创建<br />
+     * 10：用户催单<br />
+     * 20：商家发货<br />
+     * 30：订单完成<br />
     */
     private Byte status;
 }

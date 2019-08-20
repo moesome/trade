@@ -47,9 +47,12 @@ hystrix:
       execution:
         isolation:
           thread:
-            timeoutInMillsecond: 6000
+            timeoutInMilliseconds: 6000
 
 zuul:
+  host:
+    connect-timeout-millis: 15000 #HTTP连接超时要比Hystrix的大
+    socket-timeout-millis: 6000   #socket超时
   sensitiveHeaders:
   ignored-services: "*"
   routes:
@@ -64,6 +67,10 @@ zuul:
     trade-order-server:
       path: /*_orders/**
       service-id: trade-order-server
+      strip-prefix: false
+    trade-recharge-server:
+      path: /recharge/**
+      service-id: trade-recharge-server
       strip-prefix: false
   retryable: true
 logging:
