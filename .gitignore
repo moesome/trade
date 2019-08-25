@@ -34,3 +34,4 @@ build/
 **/resources/*-prod.yml
 **/resources/*-prod.properties
 
+api.moesome.com.jks

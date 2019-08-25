@@ -40,19 +40,24 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
-
 hystrix:
   command:
     default:
+      circuitBreaker:
+        enabled: false
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 6000
-
+            timeoutInMilliseconds: 10000
+        timeout:
+          enable: false
+ribbon:
+  ReadTimeout: 10000
+  SocketTimeout: 60000
 zuul:
   host:
     connect-timeout-millis: 15000 #HTTP连接超时要比Hystrix的大
-    socket-timeout-millis: 6000   #socket超时
+    socket-timeout-millis: 10000   #socket超时
   sensitiveHeaders:
   ignored-services: "*"
   routes:

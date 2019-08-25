@@ -81,6 +81,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Result store(CommodityOrderVo commodityOrderVo) {
+        log.debug("收到订单请求: "+commodityOrderVo);
         // 防止多次重复下单，往缓存中写入订单，可能存在已存在订单但缓存中不存在情况
         if (!cacheManager.saveCommodityOrderVo(commodityOrderVo)){
             return CommodityOrderResult.REPEATED_REQUEST;
@@ -100,21 +101,27 @@ public class OrderServiceImpl implements OrderService {
             return CommodityOrderResult.TIME_LIMIT_EXCEED;
         }
         // 预减库存限流
+        log.debug("尝试预减库存");
         if(!commodityClient.decrementStock(commodityOrderVo.getCommodityId())){
+            log.debug("预减库存失败");
             return CommodityOrderResult.LIMIT_EXCEED;
         }
+        log.debug("校验用户金币");
         if (commodityDetailVo.getPrice().compareTo(BigDecimal.ZERO) > 0){
-            UserDetailVo userDetailVo = userClient.getUserDetailVoById(commodityDetailVo.getUserId());
+            // 获取下单人的信息
+            UserDetailVo userDetailVo = userClient.getUserDetailVoById(commodityOrderVo.getUserId());
             // 收费商品判断金币是否充足
             userDetailVo.setCoin(userDetailVo.getCoin().subtract(commodityDetailVo.getPrice()));
             if (userDetailVo.getCoin().compareTo(BigDecimal.ZERO) < 0){
+                cacheManager.removeCommodityOrderVo(commodityOrderVo);
+                commodityClient.incrementStock(commodityOrderVo.getCommodityId());
                 // 金币不足，不合法，请求能发送过来金币一定是够的
                 return Result.REQUEST_ERR;
             }
         }
         // 创建订单
-        Integer execute = transactionTemplate.execute(transactionStatus -> {
-            try {
+        try {
+            transactionTemplate.execute(transactionStatus -> {
                 CommodityOrder commodityOrder = new CommodityOrder();
                 commodityOrder.setUserId(commodityOrderVo.getUserId());
                 commodityOrder.setCommodityId(commodityOrderVo.getCommodityId());
@@ -134,33 +141,20 @@ public class OrderServiceImpl implements OrderService {
                 );
                 // 发送消息到队列
                 mqSenderManager.sendToStockDecrementQueue(commodityOrderMessage);
-            } catch (DuplicateKeyException e) {
-                log.warn("订单重复创建！" + e.toString());
-                transactionStatus.setRollbackOnly();
-                return -1;
-            } catch (Exception e) {
-                log.error("创建订单过程发生错误！" + e.toString());
-                transactionStatus.setRollbackOnly();
-                return -2;
-            }
-            return 0;
-        });
-        // 下单失败，回滚两个缓存，但重复订单不会删除防重复下单的缓存
-        if (execute == null){
-            cacheManager.removeCommodityOrderVo(commodityOrderVo);
-            commodityClient.incrementStock(commodityOrderVo.getCommodityId());
-            return Result.SERVER_ERROR;
-        }else if (execute == 0){
-            return Result.SUCCESS;
-        }else if (execute == -1){
+                return 0;
+            });
+        } catch (DuplicateKeyException e) {
+            log.warn("订单重复创建！" + e.toString());
             // 重复订单将不会删除防止重复下单的缓存
             commodityClient.incrementStock(commodityOrderVo.getCommodityId());
             return CommodityOrderResult.REPEATED_REQUEST;
-        }else{
+        } catch (Exception e) {
+            log.error("创建订单过程发生错误！" + e.toString());
             cacheManager.removeCommodityOrderVo(commodityOrderVo);
             commodityClient.incrementStock(commodityOrderVo.getCommodityId());
             return Result.SERVER_ERROR;
         }
+        return Result.SUCCESS;
     }
 
     @Override

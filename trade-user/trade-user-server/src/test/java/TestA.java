@@ -22,10 +22,7 @@ public class TestA {
 
     @Test
     public void test() throws InterruptedException {
-        new Thread(() -> cacheManager.getUserDetailVo(-6667l)).start();
-        new Thread(() -> cacheManager.getUserDetailVo(-6667l)).start();
-        new Thread(() -> cacheManager.getUserDetailVo(-6668l)).start();
-        Thread.sleep(100000L);
+
     }
 
 }

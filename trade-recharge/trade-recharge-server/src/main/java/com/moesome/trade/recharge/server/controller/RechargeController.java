@@ -56,7 +56,7 @@ public class RechargeController {
 			log.debug("验签失败");
 		}
 		try {
-			httpServletResponse.sendRedirect(httpServletResponse.encodeRedirectURL("http://spike.moesome.com"));
+			httpServletResponse.sendRedirect(httpServletResponse.encodeRedirectURL("https://trade.moesome.com"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

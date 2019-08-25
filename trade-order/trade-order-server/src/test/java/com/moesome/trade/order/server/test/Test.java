@@ -22,13 +22,5 @@ public class Test {
 
     @org.junit.Test
     public void test(){
-        CommodityOrderVo commodityOrderVo = new CommodityOrderVo();
-        commodityOrderVo.setUserId(777l);
-        commodityOrderVo.setCommodityId(666l);
-        System.out.println(cacheManager.saveCommodityOrderVo(commodityOrderVo));;
-        System.out.println(cacheManager.saveCommodityOrderVo(commodityOrderVo));;
-        System.out.println(cacheManager.saveCommodityOrderVo(commodityOrderVo));;
-        System.out.println(cacheManager.saveCommodityOrderVo(commodityOrderVo));;
-
     }
 }

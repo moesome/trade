@@ -127,10 +127,20 @@ public class CommodityOrderResolverServiceImpl implements CommodityOrderResolver
     @Override
     public Result sendProduction(Long userId, Long commodityOrderId) {
         CommodityOrder commodityOrder = commodityOrderMapper.selectByPrimaryKey(commodityOrderId);
-        if (commodityOrder == null) {
+        if (commodityOrder == null){
             return Result.REQUEST_ERR;
         }
-        if (userId.equals(commodityOrder.getUserId())) {
+        // 根据订单找出商品
+        CommodityDetailVo commodityDetailVo = commodityClient.getByCommodityId(commodityOrder.getCommodityId());
+        if (commodityDetailVo == null){
+            return Result.REQUEST_ERR;
+        }
+        // 获取商品所有者信息（优先查的缓存）
+        UserDetailVo commodityOwner= userClient.getUserDetailVoById(commodityDetailVo.getUserId());
+        if (commodityOwner == null) {
+            return Result.REQUEST_ERR;
+        }
+        if (userId.equals(commodityOwner.getId())) {
             // 仅在订单创建或用户催单时修改状态为已经发货
             if (commodityOrder.getStatus() == 0 || commodityOrder.getStatus() == 10) {
                 CommodityOrder commodityOrderForUpdate = new CommodityOrder();
