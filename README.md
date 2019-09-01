@@ -29,10 +29,13 @@
 ## 操作演示
 
 1. 注册账号
+
 ![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/注册.png)
 2. 登录
+
 ![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/登录.png)
 3. 发布商品
+
     ![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/发布商品1.1.png)
     
     ![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E5%8F%91%E5%B8%83%E5%95%86%E5%93%81%E5%92%8C.png)
@@ -40,16 +43,22 @@
 
 	![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E8%B4%AD%E4%B9%B0.png)
 	下单后将排队处理订单
+	
     ![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E7%A7%92%E6%9D%801.png)
     秒杀成功
+    
     ![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E7%A7%92%E6%9D%802.png)
     重复下单
+    
     ![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E7%A7%92%E6%9D%803.png)
 5. 发货
+
 	![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E5%8F%91%E8%B4%A7.png)
 6. 收货
+
 	![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E6%94%B6%E8%B4%A7.png)
 7. 充值
+
 	![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E5%85%85%E5%80%BC.png)
 ## 下单流程
 
