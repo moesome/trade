@@ -24,8 +24,9 @@
 
 ## 服务间调用架构
 
-![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84.png)
+![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84.png)  
 
+![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/eureka.png)
 ## 操作演示
 
 1. 注册账号  
