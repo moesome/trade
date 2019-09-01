@@ -28,41 +28,39 @@
 
 ## 操作演示
 
-1. 注册账号
+1. 注册账号  
+![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/注册.png)  
 
-![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/注册.png)
-2. 登录
-
+2. 登录  
 ![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/登录.png)
-3. 发布商品
 
-    ![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/发布商品1.1.png)
-    ![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E5%8F%91%E5%B8%83%E5%95%86%E5%93%81%E5%92%8C.png)
-    
-4. 秒杀商品
+3. 发布商品  
+![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/发布商品1.1.png)  
+![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E5%8F%91%E5%B8%83%E5%95%86%E5%93%81%E5%92%8C.png)      
 
-	![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E8%B4%AD%E4%B9%B0.png)
-	
-	下单后将排队处理订单
-	
-    ![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E7%A7%92%E6%9D%801.png)
-    
-    秒杀成功
-    
-    ![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E7%A7%92%E6%9D%802.png)
-    
-    重复下单
-    
-    ![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E7%A7%92%E6%9D%803.png)
-5. 发货
+4. 秒杀商品  
+![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E8%B4%AD%E4%B9%B0.png)  
 
-	![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E5%8F%91%E8%B4%A7.png)
-6. 收货
+下单后将排队处理订单  
 
-	![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E6%94%B6%E8%B4%A7.png)
-7. 充值
+​		![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E7%A7%92%E6%9D%801.png)  
 
-	![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E5%85%85%E5%80%BC.png)
+秒杀成功  
+
+​		![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E7%A7%92%E6%9D%802.png)  
+
+重复下单  
+
+​		![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E7%A7%92%E6%9D%803.png)  
+
+5. 发货  
+![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E5%8F%91%E8%B4%A7.png)  
+
+6. 收货  
+![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E6%94%B6%E8%B4%A7.png)  
+
+7. 充值  
+![](https://raw.githubusercontent.com/moesome/projectImages/master/trade/%E5%85%85%E5%80%BC.png)  
 ## 下单流程
 
 使用消息驱动的模式，处理订单时将各自服务完成后的消息发送到队列，由下一个处理消息的服务取出，继续进行处理。利用 RabbitMQ ACK 机制和持久化机制确保生产者消息一定能投递到队列，消费者开启手动确认，在业务处理完成后发送确认消息，同时使用消息表来记录每个服务已处理的信息，保证消息处理幂等。在某个服务出现异常时向订单失败队列投递消息，由订单服务对已处理的内容进行回滚。保证该流程的最终一致性。
