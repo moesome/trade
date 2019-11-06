@@ -2,6 +2,7 @@ package com.moesome.trade.user.server.service;
 
 import com.moesome.trade.common.code.SuccessCode;
 import com.moesome.trade.common.manager.CookiesManager;
+import com.moesome.trade.common.manager.DistributedLock;
 import com.moesome.trade.user.common.request.LoginVo;
 import com.moesome.trade.user.common.request.UserStoreVo;
 import com.moesome.trade.common.response.Result;
@@ -36,6 +37,9 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private SessionManager sessionManager;
+
+    @Autowired
+    private DistributedLock distributedLock;
 
     @Override
     public Result login(LoginVo loginVo, HttpServletResponse httpServletResponse){
@@ -121,11 +125,13 @@ public class UserServiceImpl implements UserService{
         user.setId(userId);
         log.debug("以非空字段更新用户数据库 user: "+user);
         userMapper.updateByPrimaryKeySelective(user);
+        distributedLock.lock(userId);
         // store 转化为 detailVo 返回时需要填充 coin 信息，需要额外查询一次数据库
         userInDB = userMapper.selectByPrimaryKey(userId);
         UserDetailVo userDetailVo = Transform.transformUserToUserDetailVo(userInDB);
         log.debug("刷新缓存:"+userDetailVo);
         cacheManager.saveUserDetailVo(userDetailVo);
+        distributedLock.unlock(userId);
         return new UserResult(SuccessCode.OK,userDetailVo);
     }
 

@@ -69,11 +69,16 @@ public class MessageResolverServiceImpl implements MessageResolverService{
                     commodityOrderMapper.deleteByPrimaryKey(orderId);
                     log.debug("从缓存中删除限制下单信息: "+commodityOrderVo);
                     cacheManager.removeCommodityOrderVo(commodityOrderVo);
-                    log.debug("回滚缓存的库存");
-                    commodityClient.incrementStock(commodityOrderMessage.getCommodityId());
                     if (commodityOrderMessage.getStatus() == -3){
+                        // 金币不足，说明金币的缓存可能存在问题
+
                         // 需要额外回滚数据库库存
                         mqSenderManager.sendToStockRollbackQueue(commodityOrderMessage);
+                    }else{
+                        // 库存不足，说明库存的缓存可能存在问题
+
+                        log.debug("回滚缓存的库存");
+                        commodityClient.incrementStock(commodityOrderMessage.getCommodityId());
                     }
                     return null;
                 }

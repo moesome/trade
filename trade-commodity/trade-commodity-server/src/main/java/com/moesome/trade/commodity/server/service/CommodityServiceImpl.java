@@ -8,6 +8,7 @@ import com.moesome.trade.commodity.server.model.dao.CommodityMapper;
 import com.moesome.trade.commodity.server.model.domain.Commodity;
 import com.moesome.trade.commodity.server.util.Transform;
 import com.moesome.trade.common.code.SuccessCode;
+import com.moesome.trade.common.manager.DistributedLock;
 import com.moesome.trade.common.response.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -27,6 +28,9 @@ public class CommodityServiceImpl implements CommodityService, InitializingBean 
 
     @Autowired
     private CacheManager cacheManager;
+
+    @Autowired
+    private DistributedLock distributedLock;
 
     @Override
     public Result index(int page, String order) {
@@ -106,6 +110,7 @@ public class CommodityServiceImpl implements CommodityService, InitializingBean 
             Commodity commodity = Transform.transformCommodityStoreVoToCommodity(commodityStoreVo);
             commodity.setId(commodityId);
             commodity.setUpdatedAt(new Date());
+            distributedLock.lock(commodityId);
             log.info("以非空商品字段更新数据库: "+commodity);
             commodityMapper.updateByPrimaryKeySelective(commodity);
             // 填充数据，使得 storeVo 转化为 detailVo 避免再次查数据库
@@ -114,6 +119,7 @@ public class CommodityServiceImpl implements CommodityService, InitializingBean 
             CommodityDetailVo commodityDetailVo = Transform.transformCommodityToCommodityDetailVo(commodity);
             log.info("修该商品写入缓存: "+commodityDetailVo);
             cacheManager.saveCommodityDetailVo(commodityDetailVo);
+            distributedLock.unlock(commodityId);
             return Result.SUCCESS;
         }else{
             log.warn("user: "+userId+"尝试其他用户的商品 commodityId: "+" "+commodityId+" 已阻止");
